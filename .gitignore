@@ -1,0 +1,40 @@
+﻿# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Node
+node_modules/
+
+# Next.js
+.next/
+out/
+dist/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+build/
+*.egg-info/
+
+# Large ML files
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.pth
+
+# Datasets
+datasets/
