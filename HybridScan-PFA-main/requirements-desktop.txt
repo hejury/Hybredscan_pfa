@@ -1,0 +1,11 @@
+# Dépendance supplémentaire pour l'application desktop (run_desktop.py /
+# desktop/launcher.py) -- s'ajoute à l'environnement Python existant du
+# projet (FastAPI, uvicorn, analyze.py et ses dépendances ML restent
+# inchangés, voir SECURITY-NOTE.md / README.md pour le reste de
+# l'environnement). N'installe ni ne remplace aucun package lié à la
+# détection.
+#
+# Sur Windows, pywebview embarque le rendu via le WebView2 runtime
+# (préinstallé avec Windows 10/11 + Edge) par l'intermédiaire de
+# pythonnet/clr_loader, installés automatiquement comme dépendances.
+pywebview>=6.0

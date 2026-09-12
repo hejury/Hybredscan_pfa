@@ -1,0 +1,22 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+frontend/node_modules/
+frontend/.next/
+quarantine/
+history.csv
+
+# Application desktop (run_desktop.py / desktop/launcher.py)
+logs/
+
+# Donn�es locales / sensibles
+users.json
+validation/backups/users.json.*.bak
+log.txt
+detections_rt.json

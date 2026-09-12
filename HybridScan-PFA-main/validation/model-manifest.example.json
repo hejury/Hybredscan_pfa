@@ -1,0 +1,39 @@
+{
+  "_comment": "Proposed example only. Not loaded by any production code. Fields marked VERIFIED were confirmed directly against the current model.pkl/repository during the model-reconciliation forensic review (see validation/MODEL-RECONCILIATION.md); fields marked PLACEHOLDER require the project owner to supply a real, verified value before this manifest could be trusted as authoritative.",
+
+  "model_sha256": "4c0f8b73382febd1ef17deb3d81e3c8fda48a36fd1e6f561080b8619fb30622f",
+  "_model_sha256_status": "VERIFIED — computed directly from the current model.pkl in this repository",
+
+  "algorithm": "RandomForestClassifier",
+  "_algorithm_status": "VERIFIED — introspected from the loaded model object (sklearn.ensemble.RandomForestClassifier)",
+
+  "estimators": 200,
+  "_estimators_status": "VERIFIED — model.n_estimators",
+
+  "feature_count": 29,
+  "_feature_count_status": "VERIFIED — len(bundle['features']), matches analyze.extraire_features() exactly",
+
+  "feature_names_hash": "PLACEHOLDER — not computed by this task; recommend sha256 of the sorted, joined feature-name list so a future artifact swap can be detected",
+
+  "training_dataset": "EMBER-2018 (20000)",
+  "_training_dataset_status": "PARTIALLY VERIFIED — this exact string is embedded in the current model.pkl as bundle['source']; the underlying raw EMBER-2018 corpus itself is not present in this repository and was not independently cross-checked",
+
+  "training_sample_count": 20000,
+  "_training_sample_count_status": "PARTIALLY VERIFIED — implied by bundle['source'] (\"...(20000)\"), not independently confirmed against a raw dataset file",
+
+  "class_distribution": "PLACEHOLDER — not recorded anywhere in this repository for the EMBER run; the *preliminary* 830-sample dataset.csv is 796 healthy / 34 malicious, but that is a different dataset and must not be conflated with this field",
+
+  "threshold": 0.45,
+  "_threshold_status": "VERIFIED — bundle['seuil'] in model.pkl, and matches analyze.py's hardcoded SEUIL constant exactly",
+
+  "validation_protocol": "PLACEHOLDER — the preliminary experiment used stratified 5-fold cross-validation (exp_seuil.py/exp_modeles.py, verified); no equivalent script for the final EMBER run exists in this repository to confirm the same protocol was used",
+
+  "recall": "PLACEHOLDER — do not populate with either the preliminary (0.7647) or the final-report-claimed (0.941) figure without independent verification; see MODEL-RECONCILIATION.md",
+  "precision": "PLACEHOLDER — see above",
+  "f1": "PLACEHOLDER — see above",
+  "roc_auc": "PLACEHOLDER — see above",
+
+  "training_script_commit": "PLACEHOLDER — this repository has zero git commits at any point in this engagement; a commit reference cannot currently exist",
+
+  "created_at": "PLACEHOLDER — model.pkl's filesystem mtime (2026-07-23) is supporting evidence only, not a substitute for a recorded, signed creation timestamp"
+}

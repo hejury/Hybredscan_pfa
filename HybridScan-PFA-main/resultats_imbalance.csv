@@ -1,0 +1,6 @@
+Strategie,Rappel,Rappel_sd,Precision,F1,ROC-AUC
+1. Baseline (aucun traitement),0.6952,0.1919,0.9667,0.7897,0.9825
+2. Class weights (ponderation),0.6667,0.1756,0.9667,0.7718,0.9847
+3. Random UnderSampling,0.819,0.1182,0.3403,0.47,0.9288
+4. SMOTE (sur-echantillonnage),0.6381,0.1772,0.8648,0.7125,0.9843
+5. SMOTE + Tomek Links,0.6381,0.1772,0.8195,0.69,0.9851

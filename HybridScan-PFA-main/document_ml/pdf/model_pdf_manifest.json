@@ -1,0 +1,128 @@
+{
+  "artifact": "model_pdf.pkl",
+  "artifact_sha256": "be1ade69e5acdc130478dac6dbe904fa557eb53a93bdfa9140fc9097a9b3a8bc",
+  "status_disclaimer": "RESEARCH / PFA PROTOTYPE. Validated on a held-out subset of a PDFMalware2022 (CIC-Evasive-PDFMal2022 family) dataset, PLUS manual runtime validation against 3 real legitimate PDFs of varying size (one of which was misclassified and is documented, not hidden). NOT production-ready: no external validation set, no adversarial robustness testing, ~92.3% held-out precision means real false positives should be expected.",
+  "not_production_ready": true,
+  "wording_note": "Refer to this model as: 'research/PFA prototype validated on a held-out subset of CIC-Evasive-PDFMal2022 (PDFMalware2022.parquet), plus manual runtime validation against real legitimate PDFs'. Never as 'production-ready'.",
+  "dataset": {
+    "dataset_name": "PDFMalware2022 (CIC-Evasive-PDFMal2022 family)",
+    "source_file": "datasets/pdf/PDFMalware2022.parquet",
+    "source_dataset_sha256": "25db2059d59207d2040c5a999838514579ed4667b2b7fa39f2398dee484caf65",
+    "training_ready_file": "datasets/pdf/PDFMalware2022_training_ready.parquet",
+    "training_ready_dataset_sha256": "50b7c27f08f570052ccb8306dcadd04c6040418e4235327e4ca7c73e0ec79d53",
+    "row_quality_rule": "Strategy A (complete-case, 8,914 rows) MINUS 975 rows (40 groups) excluded for label-conflicting 16-feature vectors (see validation/PDF-RUNTIME-FIDELITY.md section 3.1) -- final usable population 7,939 rows.",
+    "cic_paper_citation": "Issakhani, Victor, Tekeoglu, Lashkari -- 'PDF Malware Detection based on Stacking Learning', ICISSP 2022 (DOI 10.5220/0010908400003120)",
+    "official_cic_page": "https://www.unb.ca/cic/datasets/pdfmal-2022.html",
+    "kaggle_relationship": "Not sourced from Kaggle in this project -- supplied locally by the user as PDFMalware2022.parquet, matching the CIC-Evasive-PDFMal2022 column family."
+  },
+  "feature_schema": {
+    "schema_version": 4,
+    "model_variant": "C (16 features -- pdf_size, nb_obj_kw, nb_page_approx all excluded; all 16 remaining features proven token-identical to PDFiD's published methodology, no runtime-approximation caveats)",
+    "feature_count": 16,
+    "feature_order": [
+      "nb_stream_kw",
+      "nb_endstream_kw",
+      "nb_objstm_kw",
+      "nb_trailer_kw",
+      "nb_xref_kw",
+      "nb_startxref_kw",
+      "nb_embeddedfile_kw",
+      "nb_js_kw",
+      "nb_javascript_kw",
+      "nb_aa_kw",
+      "nb_openaction_kw",
+      "nb_launch_kw",
+      "nb_acroform_kw",
+      "nb_xfa_kw",
+      "nb_jbig2decode_kw",
+      "nb_richmedia_kw"
+    ],
+    "pdf_size_decision": "REMOVED in schema v4. Training column 'PdfSize' has no documented unit; a third-party reproduction (Mathys-Rituper/PDF-feature-extractor) independently implements round(bytes/1024,2), corroborating a kilobytes hypothesis, but is not the official CIC source (self-described as an 'improved', i.e. reinterpreted, extractor) -- insufficient to meet the 'documented, proven' bar. See validation/PDF-RUNTIME-FIDELITY.md section 1.",
+    "removed_features": {
+      "header_present": "Removed in schema v2 -- unreliable runtime reproduction + largest class-conditional data-quality gap (20.03pp).",
+      "is_encrypted": "Removed in schema v3 -- real training column ranges 0-4, undocumented semantics for 2/3/4.",
+      "pdf_size": "Removed in schema v4 -- training-data unit unproven (probable KB vs. runtime bytes); confirmed real-world defect (see pdf_size_decision above and validation/PDF-RUNTIME-FIDELITY.md).",
+      "nb_obj_kw": "Excluded from Model C (also excluded from Model B) -- runtime-approximate.",
+      "nb_page_approx": "Excluded from Model C (also excluded from Model B) -- runtime-approximate."
+    }
+  },
+  "cleaning_strategy": {
+    "sentinel_handling": "-1 treated as missing, never a real 0-occurrence count.",
+    "compound_notation": "PDFiD-style 'N(M)' -> N retained, M discarded from the feature vector.",
+    "leaked_text_handling": "Non-numeric garbage strings treated as missing, never coerced to 0.",
+    "complete_case_rule": "Strategy A: 8,914 of 10,023 rows (all 19 v3-candidate features observed).",
+    "conflicting_label_groups_excluded": {
+      "n_groups": 40,
+      "n_rows": 975,
+      "resolution": "All rows in any conflicting group excluded -- never a majority-vote label choice."
+    },
+    "duplicate_group_split_policy": "Rows sharing an identical cleaned 16-feature vector (SHA-256 content key, recomputed for Model C's feature set) assigned to a single split -- 0 groups span train/val/test."
+  },
+  "model": {
+    "algorithm": "RandomForestClassifier",
+    "hyperparameters": {
+      "max_depth": 10,
+      "n_estimators": 300
+    },
+    "hyperparameter_search": "Modest 3-point search over max_depth in {None, 10, 20}, selected by validation ROC-AUC only.",
+    "threshold": 0.15,
+    "threshold_selection_rationale": "Maximizes F2 (recall-weighted, beta=2) on VALIDATION only, tie-broken by higher recall.",
+    "random_seed": 42
+  },
+  "validation_rationale": "Model C selected over Model B (17 features, included pdf_size) because Model B's pdf_size relies on an unverified training-data unit that the runtime extractor could not reproduce (confirmed defect: real PDFs' raw byte counts are 100-1000x beyond the training range). Model C's recall/FN-rate are comparable or marginally better than Model B despite a measurable precision/FPR cost, and all 16 remaining features are proven runtime-identical -- per instruction, runtime semantic correctness outweighs the marginal metric loss. See validation/PDF-RUNTIME-FIDELITY.md section 4.",
+  "held_out_test_metrics": {
+    "accuracy": 0.9601259181532005,
+    "precision": 0.9232505643340858,
+    "recall": 0.9903147699757869,
+    "f1": 0.955607476635514,
+    "roc_auc": 0.9972334319791947,
+    "confusion_matrix": {
+      "tn": 506,
+      "fp": 34,
+      "fn": 4,
+      "tp": 409
+    },
+    "false_positive_rate": 0.06296296296296296,
+    "false_negative_rate": 0.009685230024213076,
+    "n_test": 953,
+    "test_class_distribution": {
+      "malicious": 413,
+      "benign": 540
+    }
+  },
+  "held_out_test_95ci_bootstrap_2000": {
+    "accuracy_95ci": [
+      0.9475341028331584,
+      0.9716684155299056
+    ],
+    "precision_95ci": [
+      0.8974358974358975,
+      0.9458824802648332
+    ],
+    "recall_95ci": [
+      0.9796424676740926,
+      0.9977011494252873
+    ],
+    "f1_95ci": [
+      0.9405027514438269,
+      0.9685688757289962
+    ],
+    "roc_auc_95ci": [
+      0.9951067538501517,
+      0.9988668088039412
+    ]
+  },
+  "runtime_fidelity_validation": "Real, legitimate, size-diverse local PDFs (4.2 KB, 103 KB, 1.45 MB) run through the exact production path. Medium and large correctly classified sain (proba 0.06, 0.002). Small fixture misclassified malveillant (proba 0.73) -- investigated (not patched): driven by a genuine, sparsely-populated joint feature region (OpenAction + double-xref), not an out-of-distribution value. See validation/PDF-RUNTIME-FIDELITY.md section 5 for full detail.",
+  "known_limitations": [
+    "Real-world false positive OBSERVED and documented (not hidden): a small (4.2 KB) legitimate PDF was classified malveillant (proba 0.73) during manual runtime testing -- driven by a sparsely-populated joint feature region (OpenAction + double-xref present together), not an out-of-distribution value. Held-out precision (~92.3%) predicts this kind of error will occur on real files. See validation/PDF-RUNTIME-FIDELITY.md section 5.",
+    "975 rows (11% of the complete-case dataset) were excluded because their 16-feature vectors collide with an opposite-label row -- Model C has seen even less of the original population's diversity than Model B did.",
+    "No external validation set was used -- all metrics come from splits of a single dataset file.",
+    "No adversarial robustness testing was performed.",
+    "pdf_size's true unit remains genuinely unresolved (probable KB, not proven) -- removed from the model rather than guessed; a future phase could re-investigate with authoritative documentation or a controlled re-derivation.",
+    "Complete-case filtering (both the original 19-feature pass and this phase's additional 16-feature conflict exclusion) removed disproportionately more of the original Malicious class than Benign."
+  ],
+  "no_external_validation_disclaimer": "No dataset other than local splits of PDFMalware2022.parquet was used for training/held-out evaluation. Runtime validation used 3 real local PDFs (not a formal external validation set).",
+  "training_date_utc": "2026-08-11T01:34:44+00:00",
+  "python_version": "3.14.3",
+  "sklearn_version": "1.8.0"
+}

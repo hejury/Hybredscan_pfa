@@ -1,0 +1,23 @@
+{
+  "phase": "production-hardening — safety baseline",
+  "git": {
+    "repository_root_is_home_directory": true,
+    "note": "The Git root resolves above the project directory (a parent home directory), confirmed via `git rev-parse --show-toplevel`. No git add/commit/reset/other destructive Git command was run at any point in this phase, consistent with standing safety policy for this repository.",
+    "status_summary": "single untracked-root entry only (no tracked files exist anywhere in this repository; zero commits exist)"
+  },
+  "checksums_before_sha256": {
+    "model.pkl": "4c0f8b73382febd1ef17deb3d81e3c8fda48a36fd1e6f561080b8619fb30622f",
+    "analyze.py": "7b0fff24e707e9a88f1b835051f56aa44caa3874c6c2573f971bfcc1ad1d4066",
+    "watcher.py": "48dc8b110bc4ce0fc707db49d94d8b6a121e579d359d09bf84d98afef8aabea7",
+    "explain.py": "1ea778c2e7f0e5c5a32f15c7f7450eb156f7b07dbb80d12832153c6da77fb3dd",
+    "history.csv": "bdbf1dea1f5dc38096258b50729e8cf409f5c478b6c9d23b72ea2ccfe058277b",
+    "auth.py": "a99f2b65e5cb6d36bcc80d2aedccc14cedc66b489762c3bcd9de87f54c8d4743",
+    "app.py": "156e28944736cdc377c466497faa1264a739139d00bd8a3c3ba731243db968a3"
+  },
+  "history_csv_line_count_including_header": 50,
+  "real_quarantine_directory_exists": false,
+  "secrets_toml_gitignored": true,
+  "secrets_toml_gitignore_rule_matched": ".gitignore:2 (.streamlit/secrets.toml)",
+  "users_json_gitignored_before_this_phase": false,
+  "note_on_credentials": "No credential value, secret, password, or API key is recorded anywhere in this file or in any other file this phase creates."
+}

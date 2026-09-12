@@ -1,0 +1,21 @@
+{
+  "phase": "production-hardening — post-implementation data-integrity check",
+  "checksums_sha256": {
+    "model.pkl":    { "before": "4c0f8b73382febd1ef17deb3d81e3c8fda48a36fd1e6f561080b8619fb30622f", "after": "4c0f8b73382febd1ef17deb3d81e3c8fda48a36fd1e6f561080b8619fb30622f", "status": "UNCHANGED" },
+    "analyze.py":   { "before": "7b0fff24e707e9a88f1b835051f56aa44caa3874c6c2573f971bfcc1ad1d4066", "after": "7b0fff24e707e9a88f1b835051f56aa44caa3874c6c2573f971bfcc1ad1d4066", "status": "UNCHANGED" },
+    "watcher.py":   { "before": "48dc8b110bc4ce0fc707db49d94d8b6a121e579d359d09bf84d98afef8aabea7", "after": "48dc8b110bc4ce0fc707db49d94d8b6a121e579d359d09bf84d98afef8aabea7", "status": "UNCHANGED" },
+    "explain.py":   { "before": "1ea778c2e7f0e5c5a32f15c7f7450eb156f7b07dbb80d12832153c6da77fb3dd", "after": "1ea778c2e7f0e5c5a32f15c7f7450eb156f7b07dbb80d12832153c6da77fb3dd", "status": "UNCHANGED" },
+    "history.csv":  { "before": "bdbf1dea1f5dc38096258b50729e8cf409f5c478b6c9d23b72ea2ccfe058277b", "after": "bdbf1dea1f5dc38096258b50729e8cf409f5c478b6c9d23b72ea2ccfe058277b", "status": "UNCHANGED" },
+    "auth.py":      { "before": "a99f2b65e5cb6d36bcc80d2aedccc14cedc66b489762c3bcd9de87f54c8d4743", "after": "20a4698e51d1b52590e5a88f564a1317d7d2896d12a06a153ee4807bba0ae79f", "status": "CHANGED — AUTHORIZED", "reason": "Added verify_compte_configure(): loads a single configured admin account from Streamlit secrets/env, reuses the existing _hash_password() algorithm, constant-time comparison via hmac.compare_digest(). register()/verify()/users.json handling left intact and untouched." },
+    "app.py":       { "before": "156e28944736cdc377c466497faa1264a739139d00bd8a3c3ba731243db968a3", "after": "08df24123d57196c89255db4e28392f5b283cca6d0a0be4c9812214d6877b2c8", "status": "CHANGED — AUTHORIZED", "reason": "Added the authentication gate (login page, st.stop() before any page/sidebar code, logout with watcher-stop-before-clear), and the folder-scan allowlist (_racines_autorisees, _cible_dans_racines_autorisees, wired into valider_dossier_scan). No analyzer/quarantine/history/model/watcher logic touched." }
+  },
+  "style_py_changed_this_phase": false,
+  "note_on_protected_logic": "model.pkl, train_model.py, extract_features.py, exp_*.py, the 0.45 threshold, feature extraction, Random Forest inference, VirusTotal decision behavior, quarantine rules, chmod behavior, history.csv format, journaliser()'s contract, watcher.py's behavior, and SHAP calculation were not modified — confirmed by the identical before/after checksums above for every file in that protected set.",
+  "real_history_csv_line_count_before": 50,
+  "real_history_csv_line_count_after": 50,
+  "real_quarantine_directory_exists_before": false,
+  "real_quarantine_directory_exists_after": false,
+  "no_pe_test_binary_remains_under_validation": true,
+  "no_real_secret_appears_under_validation": true,
+  "note_on_security_log_redaction": "An initial draft of validation/logs/production-security-scan.log inadvertently included the real VT key, password_hash, and an unrelated pre-existing plaintext password value from .streamlit/secrets.toml (grep printed full matching lines rather than filenames only). This was caught during this same integrity check, and the log was regenerated with all matched secret values redacted before being finalized — confirmed via a follow-up grep returning zero matches for any real secret value in the log file."
+}

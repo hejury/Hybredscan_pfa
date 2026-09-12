@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Détection hybride de malwares</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--indigo:#0B1445;--clair:#F7F9FC;--blanc:#FFF;--bord:#E3E9F0;
+--violet:#6B5DD3;--vert:#00D68F;--rouge:#FF4757;--jaune:#FFA502;
+--txt:#0B1445;--txt-2:#5A6B80;--txt-inv:#EDE9FE;--txt-inv-2:#B9C0E8;
+--grad:linear-gradient(160deg,#8B7BD8 0%,#6B5DD3 18%,#4A3FC9 38%,#2B3AAE 60%,#16277F 82%,#0B1445 100%);
+--grad-v:linear-gradient(135deg,#00D68F 0%,#00A8CC 100%);--ease:cubic-bezier(.22,1,.36,1)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:Inter,system-ui,sans-serif;background:var(--clair);color:var(--txt)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:18px 0;transition:all .4s var(--ease)}
+nav.scrolled{background:rgba(11,20,69,.88);backdrop-filter:blur(16px);padding:12px 0}
+.nav-in{display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:11px;font-family:'Space Grotesk';font-weight:700;font-size:1.05rem;color:#fff}
+.logo-m{width:30px;height:30px;border-radius:7px;background:var(--grad-v);display:grid;place-items:center;font-size:.85rem;color:var(--indigo)}
+.nav-l{display:flex;gap:34px;list-style:none}
+.nav-l a{color:var(--txt-inv-2);text-decoration:none;font-size:.86rem;font-weight:500;position:relative}
+.nav-l a::after{content:'';position:absolute;left:0;bottom:-5px;width:0;height:1.5px;background:var(--vert);transition:width .3s}
+.nav-l a:hover{color:#fff}.nav-l a:hover::after{width:100%}
+.hero{background:var(--grad);color:var(--txt-inv);padding:150px 0 100px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;
+background:radial-gradient(1000px 620px at 68% 22%,rgba(167,139,250,.45),transparent 62%),
+radial-gradient(700px 500px at 92% 78%,rgba(59,91,219,.4),transparent 60%),
+radial-gradient(600px 400px at 8% 92%,rgba(11,20,69,.5),transparent 65%)}
+.hero::after{content:'';position:absolute;top:0;bottom:0;left:50%;right:0;pointer-events:none;
+background-image:linear-gradient(72deg,transparent 49.7%,rgba(196,181,253,.3) 49.85%,transparent 50%),
+linear-gradient(78deg,transparent 61.7%,rgba(139,92,246,.22) 61.85%,transparent 62%),
+linear-gradient(66deg,transparent 37.7%,rgba(255,255,255,.15) 37.85%,transparent 38%),
+linear-gradient(84deg,transparent 73.7%,rgba(167,139,250,.2) 73.85%,transparent 74%)}
+.ondes{position:absolute;inset:0;opacity:.7;
+background-image:repeating-radial-gradient(circle at 70% 40%,transparent 0,transparent 44px,rgba(196,181,253,.09) 44px,rgba(196,181,253,.09) 45px),
+repeating-radial-gradient(circle at 70% 40%,transparent 0,transparent 132px,rgba(255,255,255,.05) 132px,rgba(255,255,255,.05) 133px)}
+.hero-in{position:relative;z-index:2;display:grid;grid-template-columns:1.1fr .9fr;gap:50px;align-items:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono';font-size:.7rem;letter-spacing:2.2px;text-transform:uppercase;color:var(--vert);border:1px solid rgba(0,214,143,.4);border-radius:100px;padding:6px 14px;margin-bottom:26px}
+.pt{width:5px;height:5px;border-radius:50%;background:var(--vert);animation:puls 2s infinite}
+@keyframes puls{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,214,143,.5)}50%{opacity:.6;box-shadow:0 0 0 6px rgba(0,214,143,0)}}
+h1{font-family:'Space Grotesk';font-size:3.5rem;line-height:1.04;font-weight:700;letter-spacing:-2px;margin-bottom:22px;color:#fff}
+h1 em{font-style:normal;background:var(--grad-v);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:1.05rem;color:var(--txt-inv-2);line-height:1.65;max-width:490px;margin-bottom:34px}
+.btns{display:flex;gap:12px}
+.b{padding:13px 26px;border-radius:8px;font-size:.88rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .25s var(--ease);cursor:pointer}
+.b-1{background:var(--grad-v);color:var(--indigo)}
+.b-1:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,214,143,.35)}
+.b-2{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25)}
+.b-2:hover{background:rgba(255,255,255,.2)}
+.stats{display:flex;gap:38px;margin-top:52px;padding-top:32px;border-top:1px solid rgba(255,255,255,.15)}
+.st .n{font-family:'Space Grotesk';font-size:1.8rem;font-weight:700;color:var(--vert)}
+.st .l{font-size:.74rem;color:var(--txt-inv-2);margin-top:3px}
+.bouclier{position:relative;display:grid;place-items:center;height:400px}
+.bouclier svg{width:300px;height:340px;filter:drop-shadow(0 0 60px rgba(255,255,255,.3))}
+.bouclier svg path{fill:none;stroke:rgba(255,255,255,.8);stroke-width:2.5;
+stroke-dasharray:1400;stroke-dashoffset:1400;animation:trace 3s var(--ease) .4s forwards}
+@keyframes trace{to{stroke-dashoffset:0}}
+.bouclier .lueur{position:absolute;width:280px;height:280px;border-radius:50%;
+background:radial-gradient(circle,rgba(167,139,250,.4),transparent 65%);animation:resp 4s ease-in-out infinite}
+@keyframes resp{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.12);opacity:1}}
+section{padding:96px 0}
+.s-blanc{background:var(--blanc)}
+.s-nuit{background:var(--indigo);color:var(--txt-inv)}
+.tete{max-width:620px;margin-bottom:52px}
+.tete .eb{font-family:'JetBrains Mono';font-size:.7rem;letter-spacing:2.2px;text-transform:uppercase;color:var(--vert);margin-bottom:12px;display:block}
+h2{font-family:'Space Grotesk';font-size:2.15rem;font-weight:700;letter-spacing:-1px;line-height:1.18;margin-bottom:14px}
+.tete p{color:var(--txt-2);font-size:1rem;line-height:1.65}
+.s-nuit .tete p{color:var(--txt-inv-2)}
+.pipe{position:relative;padding:22px 0}
+.voie{position:absolute;top:52px;left:7%;right:7%;height:2px;background:var(--bord);overflow:hidden}
+.voie::after{content:'';position:absolute;inset:0;width:0;background:var(--grad);transition:width 1.4s var(--ease)}
+.pipe.on .voie::after{width:100%}
+.etapes{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;position:relative}
+.et{text-align:center;opacity:0;transform:translateY(18px);transition:all .55s var(--ease)}
+.pipe.on .et{opacity:1;transform:none}
+.pipe.on .et:nth-child(1){transition-delay:.1s}
+.pipe.on .et:nth-child(2){transition-delay:.4s}
+.pipe.on .et:nth-child(3){transition-delay:.7s}
+.pipe.on .et:nth-child(4){transition-delay:1s}
+.et-r{width:60px;height:60px;border-radius:15px;background:var(--blanc);border:2px solid var(--bord);display:grid;place-items:center;margin:0 auto 16px;font-size:1.4rem;position:relative;z-index:2;transition:all .4s var(--ease)}
+.pipe.on .et-r{border-color:var(--violet);box-shadow:0 6px 24px rgba(107,93,211,.25)}
+.et-n{font-family:'JetBrains Mono';font-size:.66rem;color:var(--violet);letter-spacing:1.6px;margin-bottom:5px}
+.et h4{font-family:'Space Grotesk';font-size:.98rem;font-weight:700;margin-bottom:5px}
+.et p{font-size:.79rem;color:var(--txt-2);line-height:1.5;max-width:190px;margin:0 auto}
+.branche{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:560px;margin:44px auto 0}
+.br{border-radius:11px;padding:16px 18px;border:1px solid;display:flex;gap:12px;align-items:center}
+.br-r{background:rgba(255,71,87,.05);border-color:rgba(255,71,87,.22)}
+.br-v{background:rgba(0,214,143,.05);border-color:rgba(0,214,143,.22)}
+.br .ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex-shrink:0}
+.br-r .ic{background:rgba(255,71,87,.12)}
+.br-v .ic{background:rgba(0,214,143,.12)}
+.br .t{font-family:'Space Grotesk';font-weight:700;font-size:.86rem}
+.br-r .t{color:var(--rouge)}.br-v .t{color:#00A86B}
+.br .d{font-size:.72rem;color:var(--txt-2);margin-top:1px}
+.console{background:rgba(43,58,174,.25);border:1px solid rgba(185,192,232,.18);border-radius:16px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.4)}
+.c-bar{display:flex;align-items:center;gap:8px;padding:13px 18px;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(185,192,232,.14)}
+.c-bar .d{width:11px;height:11px;border-radius:50%}
+.c-bar .t{margin-left:12px;font-family:'JetBrains Mono';font-size:.73rem;color:var(--txt-inv-2)}
+.c-corps{padding:32px}
+.zone{border:2px dashed rgba(185,192,232,.28);border-radius:12px;padding:44px 24px;text-align:center;transition:all .3s;cursor:pointer}
+.zone:hover{border-color:var(--vert);background:rgba(0,214,143,.05)}
+.zone .i{font-size:2.2rem;margin-bottom:12px;opacity:.6}
+.zone .t{font-family:'Space Grotesk';font-weight:500;margin-bottom:5px;color:#fff}
+.zone .s{font-size:.76rem;color:var(--txt-inv-2)}
+.verdict{border-radius:14px;padding:26px 30px;border-left:4px solid;margin-bottom:22px}
+.v-mal{background:linear-gradient(90deg,rgba(255,71,87,.16),transparent);border-color:var(--rouge)}
+.v-via{font-family:'JetBrains Mono';font-size:.66rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt-inv-2);margin-bottom:9px}
+.v-etat{font-family:'Space Grotesk';font-size:2.05rem;font-weight:700;letter-spacing:-1px;line-height:1;color:var(--rouge)}
+.v-msg{font-size:.85rem;color:var(--txt-inv-2);margin-top:11px}
+.cartes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.carte{background:rgba(255,255,255,.06);border:1px solid rgba(185,192,232,.16);border-radius:10px;padding:15px 17px}
+.carte .k{font-family:'JetBrains Mono';font-size:.62rem;letter-spacing:1.4px;text-transform:uppercase;color:var(--txt-inv-2);margin-bottom:6px}
+.carte .v{font-family:'Space Grotesk';font-size:1.15rem;font-weight:500;color:#fff}
+.hash{font-family:'JetBrains Mono';font-size:.72rem;color:var(--txt-inv-2);background:rgba(0,0,0,.3);border-radius:8px;padding:11px 15px;word-break:break-all;margin-bottom:24px}
+.hash b{color:var(--vert)}
+.shap-t{font-family:'JetBrains Mono';font-size:.68rem;letter-spacing:1.8px;text-transform:uppercase;color:var(--txt-inv-2);margin-bottom:16px}
+.shap-ax{display:flex;justify-content:space-between;font-size:.66rem;padding-bottom:9px;border-bottom:1px solid rgba(185,192,232,.16);margin-bottom:12px}
+.shap-ax .g{color:var(--vert)}.shap-ax .d{color:var(--rouge)}
+.sl{display:flex;align-items:center;height:29px;font-size:.76rem}
+.s-nom{width:28%;text-align:right;padding-right:14px;color:var(--txt-inv-2);font-family:'JetBrains Mono';font-size:.71rem}
+.s-bar{width:54%;display:flex;position:relative}
+.s-bar::before{content:'';position:absolute;left:50%;top:-4px;bottom:-4px;width:1px;background:rgba(185,192,232,.22)}
+.s-h{width:50%;display:flex}.s-h.g{justify-content:flex-end}
+.s-f{height:10px;border-radius:2px;width:0;transition:width .8s var(--ease)}
+.s-val{width:18%;text-align:right;font-family:'JetBrains Mono';font-size:.7rem;color:var(--txt-inv-2)}
+footer{background:var(--indigo);color:var(--txt-inv-2);padding:44px 0;border-top:1px solid rgba(185,192,232,.14);font-size:.79rem}
+.f-in{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.rev{opacity:0;transform:translateY(26px);transition:all .7s var(--ease)}
+.rev.on{opacity:1;transform:none}
+@media(max-width:900px){.hero-in{grid-template-columns:1fr}.bouclier{display:none}h1{font-size:2.3rem}.etapes{grid-template-columns:1fr;gap:26px}.voie{display:none}.branche,.cartes{grid-template-columns:1fr}.nav-l{display:none}}
+</style></head><body>
+<nav id="nav"><div class="wrap nav-in">
+<div class="logo"><div class="logo-m">⬢</div>HybridScan</div>
+<ul class="nav-l"><li><a href="#pipeline">Fonctionnement</a></li><li><a href="#analyse">Analyse</a></li><li><a href="#resultat">Résultats</a></li></ul>
+</div></nav>
+<header class="hero"><div class="ondes"></div><div class="wrap hero-in"><div>
+<div class="eyebrow"><span class="pt"></span>Détection à deux niveaux</div>
+<h1>Le connu par signature.<br>L'inconnu par <em>apprentissage</em>.</h1>
+<p>Une signature ne détecte que ce qui a déjà été vu. Pour le reste, le moteur lit la structure du fichier et décide — sans jamais l'exécuter.</p>
+<div class="btns"><a href="#analyse" class="b b-1">Analyser un fichier →</a><a href="#pipeline" class="b b-2">Voir le fonctionnement</a></div>
+<div class="stats"><div class="st"><div class="n">2</div><div class="l">étapes en cascade</div></div>
+<div class="st"><div class="n">30</div><div class="l">caractéristiques lues</div></div>
+<div class="st"><div class="n">0</div><div class="l">fichier exécuté</div></div></div>
+</div><div class="bouclier"><div class="lueur"></div>
+<svg viewBox="0 0 200 230"><path d="M100 8 L188 42 L188 118 C188 172 148 208 100 222 C52 208 12 172 12 118 L12 42 Z"/></svg>
+</div></div></header>
+<section class="s-blanc" id="pipeline"><div class="wrap">
+<div class="tete rev"><span class="eb">Chaîne de traitement</span><h2>Deux étapes, une seule décision</h2>
+<p>Le fichier traverse la signature en premier. S'il y est connu, la réponse est immédiate et certaine. Sinon, le modèle prend le relais.</p></div>
+<div class="pipe" id="pipe"><div class="voie"></div><div class="etapes">
+<div class="et"><div class="et-r">📄</div><div class="et-n">00</div><h4>Empreinte</h4><p>Le SHA-256 identifie le fichier de façon unique.</p></div>
+<div class="et"><div class="et-r">🔍</div><div class="et-n">01</div><h4>Signature</h4><p>VirusTotal interroge ~70 moteurs antivirus.</p></div>
+<div class="et"><div class="et-r">🧬</div><div class="et-n">02</div><h4>Caractéristiques</h4><p>Entropie, sections, imports — lus sans exécution.</p></div>
+<div class="et"><div class="et-r">⚡</div><div class="et-n">03</div><h4>Classification</h4><p>Le modèle tranche et justifie sa décision.</p></div>
+</div><div class="branche">
+<div class="br br-r"><div class="ic">🔒</div><div><div class="t">Malveillant</div><div class="d">Quarantaine et alerte</div></div></div>
+<div class="br br-v"><div class="ic">✓</div><div><div class="t">Sain</div><div class="d">Fichier conservé</div></div></div>
+</div></div></div></section>
+<section class="s-nuit" id="analyse"><div class="wrap">
+<div class="tete rev"><span class="eb">Analyse</span><h2>Déposer un exécutable</h2><p>Le fichier n'est jamais lancé. Seule sa structure est lue.</p></div>
+<div class="console rev"><div class="c-bar"><span class="d" style="background:#FF5F57"></span><span class="d" style="background:#FEBC2E"></span><span class="d" style="background:#28C840"></span><span class="t">analyse.py — en attente</span></div>
+<div class="c-corps"><div class="zone" onclick="document.getElementById('resultat').scrollIntoView({behavior:'smooth'})">
+<div class="i">⬡</div><div class="t">Déposer un fichier ou cliquer pour parcourir</div><div class="s">Exécutables PE · 200 Mo maximum</div>
+</div></div></div></div></section>
+<section class="s-nuit" id="resultat" style="padding-top:0"><div class="wrap">
+<div class="console rev"><div class="c-bar"><span class="d" style="background:#FF5F57"></span><span class="d" style="background:#FEBC2E"></span><span class="d" style="background:#28C840"></span><span class="t">résultat — invoice_2026.exe</span></div>
+<div class="c-corps">
+<div class="verdict v-mal"><div class="v-via">Conclu par : étape 2 — apprentissage automatique</div>
+<div class="v-etat">MALVEILLANT</div><div class="v-msg">Fichier inconnu de VirusTotal. Classé par le modèle avec une confiance de 87 %.</div></div>
+<div class="cartes"><div class="carte"><div class="k">Étape</div><div class="v">2 — IA</div></div>
+<div class="carte"><div class="k">Confiance</div><div class="v" style="color:#FF4757">87,4 %</div></div>
+<div class="carte"><div class="k">Action</div><div class="v" style="color:#FFA502">Quarantaine</div></div></div>
+<div class="hash"><b>SHA-256</b> &nbsp; a3f9c2e1b7d4508f16ca93bd2e7f04a8c5619de3b0472fa9c8e1d5063b2a7f491</div>
+<div class="shap-t">Contribution de chaque caractéristique</div>
+<div class="shap-ax"><span class="g">← pousse vers sain</span><span class="d">pousse vers malveillant →</span></div>
+<div id="shap"></div>
+</div></div></div></section>
+<footer><div class="wrap f-in"><div>Projet de fin d'année · Détection hybride de malwares</div><div>Analyse statique uniquement — aucun fichier n'est exécuté</div></div></footer>
+<script>
+const SHAP=[["sect_entropy_max",.183],["api_CreateRemoteThread",.121],["nb_imports",-.094],["entropy",.087],["dll_char",-.062],["subsystem",.041],["nb_dll",-.033],["file_size",-.021]];
+const M=Math.max(...SHAP.map(x=>Math.abs(x[1])));
+document.getElementById('shap').innerHTML=SHAP.map(([n,v])=>{
+const w=Math.abs(v)/M*100,c=v>0?'#FF4757':'#00D68F';
+const b=v>0?`<div class="s-h g"></div><div class="s-h"><div class="s-f" data-w="${w}" style="background:${c}"></div></div>`:`<div class="s-h g"><div class="s-f" data-w="${w}" style="background:${c}"></div></div><div class="s-h"></div>`;
+return `<div class="sl"><div class="s-nom">${n}</div><div class="s-bar">${b}</div><div class="s-val">${v>0?'+':''}${v.toFixed(3)}</div></div>`}).join('');
+addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>40));
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;e.target.classList.add('on');io.unobserve(e.target)}),{threshold:.2});
+document.querySelectorAll('.rev,#pipe').forEach(e=>io.observe(e));
+setTimeout(()=>document.querySelectorAll('.s-f').forEach((f,i)=>setTimeout(()=>f.style.width=f.dataset.w+'%',i*70)),1200);
+</script></body></html>
